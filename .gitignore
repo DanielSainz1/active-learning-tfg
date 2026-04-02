@@ -1,0 +1,27 @@
+# Resultados del experimento (archivos grandes, se guardan en Drive)
+results/
+
+# Datos descargados automáticamente por torchvision
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Entornos virtuales
+.venv/
+env/
+venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
