@@ -2,7 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+#Create the CNN class which is composed of two convolutional layers of 32 and 64 filters,
+#  A fully connected layer with ReLu activation
+# A dropout layer with probability 0.25
+# A last layer 
 class FashionMNISTCNN(nn.Module):
     def __init__(self):
         super().__init__()
@@ -16,6 +19,7 @@ class FashionMNISTCNN(nn.Module):
 
 
     def forward(self, x):
+        # Here I set how the data will move through the CNN
         x = self.pool(F.relu(self.conv1(x)))  
         x = self.pool(F.relu(self.conv2(x)))                               
         x = x.view(x.size(0), -1)           
