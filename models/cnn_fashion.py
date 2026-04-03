@@ -2,10 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-#Create the CNN class which is composed of two convolutional layers of 32 and 64 filters,
-#  A fully connected layer with ReLu activation
-# A dropout layer with probability 0.25
-# A last layer 
+# CNN with two convolutional blocks (32 and 64 filters),
+# a fully connected layer with ReLU, dropout (p=0.25),
+# and an output layer returning logits (no softmax)
 class FashionMNISTCNN(nn.Module):
     def __init__(self):
         super().__init__()
@@ -13,20 +12,20 @@ class FashionMNISTCNN(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.fc1 = nn.Linear(64 * 7 * 7, 128)
-        self.dropout = nn.Dropout(p=0.25, inplace=False)
+        self.dropout = nn.Dropout(p=0.25)
         self.fc2 = nn.Linear(128, 10)
 
-
-
     def forward(self, x):
-        # Here I set how the data will move through the CNN
-        x = self.pool(F.relu(self.conv1(x)))  
-        x = self.pool(F.relu(self.conv2(x)))                               
-        x = x.view(x.size(0), -1)           
-        x = F.relu(self.fc1(x))                               
-        x = self.dropout(x)                 
+        # Convolutional blocks
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        # Flatten: (batch, 64, 7, 7) -> (batch, 3136)
+        x = x.view(x.size(0), -1)
+        # Fully connected layers
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)
         x = self.fc2(x)
         return x
 
-def crear_modelo():
+def create_model():
     return FashionMNISTCNN()

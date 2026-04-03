@@ -1,55 +1,52 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
-def evaluar(modelo, loader, dispositivo):
-    modelo.eval()
-    correctas = 0
+def evaluate(model, loader, device):
+    model.eval()
+    correct = 0
     total = 0
     
     with torch.no_grad():
-        for imagenes, etiquetas in loader:
-            # 1. mover al dispositivo
-            imagenes = imagenes.to(dispositivo)
-            etiquetas = etiquetas.to(dispositivo)
-            # 2. pasar por el modelo
-            logits = modelo(imagenes)
-            # 3. la predicción es el índice más alto
-            predicciones = torch.argmax(logits, dim=1)
-            # 4. contar aciertos
-            correctas += (predicciones == etiquetas).sum().item()
-            total += etiquetas.size(0)
+        for images, labels in loader:
+            # 1. move to device
+            images = images.to(device)
+            labels = labels.to(device)
+            # 2. forward pass
+            logits = model(images)
+            # 3. prediction is the highest index
+            predictions = torch.argmax(logits, dim=1)
+            # 4. count correct predictions
+            correct += (predictions == labels).sum().item()
+            total += labels.size(0)
 
-    return correctas / total
+    return correct / total
 
-def entrenar_epoca(modelo, loader, optimizador, criterio, dispositivo):
-    modelo.train()
-    perdida_total = 0
+def train_epoch(model, loader, optimizer, criterion, device):
+    model.train()
+    total_loss = 0
 
-    for imagenes, etiquetas in loader:
-        # 1. mover al dispositivo
-        imagenes = imagenes.to(dispositivo)
-        etiquetas = etiquetas.to(dispositivo)
-        # 2. gradientes a cero
-        optimizador.zero_grad()
-        # 3. pasar por el modelo
-        logits = modelo(imagenes)
-        # 4. calcular pérdida
-        perdida = criterio(logits, etiquetas)
+    for images, labels in loader:
+        # 1. move to device
+        images = images.to(device)
+        labels = labels.to(device)
+        # 2. zero gradients
+        optimizer.zero_grad()
+        # 3. forward pass
+        logits = model(images)
+        # 4. calculate loss
+        loss = criterion(logits, labels)
         # 5. backpropagation
-        perdida.backward()
-        # 6. actualizar pesos
-        optimizador.step()
-        perdida_total += perdida.item()
+        loss.backward()
+        # 6. update weights
+        optimizer.step()
+        total_loss += loss.item()
 
-    return perdida_total / len(loader)
+    return total_loss / len(loader)
 
-def entrenar(modelo, dataset_etiquetado, config, dispositivo):
-    loader = torch.utils.data.DataLoader(dataset_etiquetado, batch_size=config["train_batch_size"], shuffle=True)
-    optimizador = torch.optim.Adam(modelo.parameters(), lr=config["learning_rate"])
-    criterio = nn.CrossEntropyLoss()
+def train(model, labeled_dataset, config, device):
+    loader = torch.utils.data.DataLoader(labeled_dataset, batch_size=config["train_batch_size"], shuffle=True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
+    criterion = nn.CrossEntropyLoss()
     
-    for epoca in range(config["train_epochs"]):
-        perdida = entrenar_epoca(modelo, loader, optimizador, criterio, dispositivo)
-
-
+    for epoch in range(config["train_epochs"]):
+        loss = train_epoch(model, loader, optimizer, criterion, device)
