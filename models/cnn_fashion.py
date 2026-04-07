@@ -27,5 +27,15 @@ class FashionMNISTCNN(nn.Module):
         x = self.fc2(x)
         return x
 
+    def get_probabilities(self, loader, device):
+        self.eval()
+        all_probs = []
+        with torch.no_grad():
+            for images, _ in loader:
+                images = images.to(device)
+                probs = torch.softmax(self.forward(images), dim=1)
+                all_probs.append(probs.cpu())
+        return torch.cat(all_probs, dim=0)
+
 def create_model():
     return FashionMNISTCNN()
