@@ -9,9 +9,15 @@ from models.cnn_fashion import create_model
 from datasets.fashion_mnist import get_dataset
 from engine.trainer import train, evaluate
 from strategies.random_sampling import random_sampling
+from strategies.margin import margin_sampling
 from strategies.least_confidence import least_confidence
-from torchvision import datasets
 from torchvision.transforms import ToTensor
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--strategy", default="random")
+args = parser.parse_args()
+
+strategy = args.strategy
 
 #Set up train data set
 labeled_indices, unlabeled_indices, train_dataset, test_dataset = get_dataset(
@@ -28,7 +34,17 @@ while len(labeled_indices) < CONFIG["budget"]:
     train(model, labeled_subset, CONFIG, device)
     test_loader = DataLoader(test_dataset, batch_size=CONFIG["eval_batch_size"])
     accuracy = evaluate(model, test_loader, device)
-    selected = random_sampling(unlabeled_indices, CONFIG["query_batch_size"], seed = 42)
+    unlabeled_subset = Subset(train_dataset, unlabeled_indices)
+    
+    if strategy == "random":
+        selected = random_sampling(unlabeled_indices, CONFIG["query_batch_size"], seed = 42)
+    elif strategy == "margin":
+        positions = margin_sampling(model, unlabeled_subset, CONFIG["query_batch_size"], device)
+        selected = [unlabeled_indices[pos] for pos in positions]
+    elif strategy == "least_confidence":
+        positions = least_confidence(model, unlabeled_subset, CONFIG["query_batch_size"], device)
+        selected = [unlabeled_indices[pos] for pos in positions]
+
     labeled_indices.extend(selected)
     unlabeled_indices = [i for i in unlabeled_indices if i not in selected]
     results.append({"labeled_size": len(labeled_indices), "accuracy": accuracy})
