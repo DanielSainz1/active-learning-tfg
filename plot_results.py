@@ -34,6 +34,7 @@ for strategy in strategies:
             averaged.append({"labeled_size": labeled_size, "accuracy": avg_accuracy})
         averaged_by_strategy[strategy] = averaged
 
+print(averaged_by_strategy)
 for strategy in averaged_by_strategy:       
     dataplot = averaged_by_strategy[strategy]
     x = [point["labeled_size"]for point in dataplot]
