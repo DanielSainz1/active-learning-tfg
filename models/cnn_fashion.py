@@ -37,5 +37,13 @@ class FashionMNISTCNN(nn.Module):
                 all_probs.append(probs.cpu())
         return torch.cat(all_probs, dim=0)
 
+    
+    def enable_dropout(self):
+      for module in self.modules():
+          if isinstance(module, torch.nn.Dropout):
+              module.train()
+
+
 def create_model():
     return FashionMNISTCNN()
+

@@ -2,8 +2,6 @@
 # config.py — Configuración central del experimento de Active Learning
 # =============================================================================
 # Este archivo contiene TODOS los hiperparámetros del experimento.
-# Si necesitas cambiar cualquier valor, cámbialo aquí y se propagará
-# automáticamente a todo el proyecto. Nunca pongas números "sueltos" en el código.
 # =============================================================================
 
 CONFIG = {
@@ -18,7 +16,7 @@ CONFIG = {
 
     # B: presupuesto total de etiquetas (número máximo de muestras a etiquetar)
     # El ciclo se detiene cuando |L| alcanza este valor
-    "budget": 5000,
+    "budget": 500,
 
     # Número de repeticiones con semillas distintas para estimar variabilidad
     "n_seeds": 5,
@@ -27,7 +25,7 @@ CONFIG = {
     # Entrenamiento de la CNN
     # -------------------------------------------------------------------------
     # Épocas de entrenamiento en cada ciclo AL (el modelo se entrena desde cero)
-    "train_epochs": 20,
+    "train_epochs": 2,
 
     # Tamaño del mini-batch para el DataLoader de entrenamiento
     "train_batch_size": 64,
