@@ -17,12 +17,14 @@ from torchvision.transforms import ToTensor
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--strategy", default="random")
+parser.add_argument("--seed", type=int, default=42)
 args = parser.parse_args()
 strategy = args.strategy
+seed = args.seed
 
 #Set up train data set
 labeled_indices, unlabeled_indices, train_dataset, test_dataset = get_dataset(
-      seed=42,
+      seed,
       initial_pool_size=CONFIG["initial_pool_size"]
   )
 
@@ -38,7 +40,7 @@ while len(labeled_indices) < CONFIG["budget"]:
     unlabeled_subset = Subset(train_dataset, unlabeled_indices)
     
     if strategy == "random":
-        selected = random_sampling(unlabeled_indices, CONFIG["query_batch_size"], seed = 42)
+        selected = random_sampling(unlabeled_indices, CONFIG["query_batch_size"], seed)
     elif strategy == "margin":
         positions = margin_sampling(model, unlabeled_subset, CONFIG["query_batch_size"], device)
         selected = [unlabeled_indices[pos] for pos in positions]
@@ -58,7 +60,7 @@ while len(labeled_indices) < CONFIG["budget"]:
     unlabeled_indices = [i for i in unlabeled_indices if i not in selected]
     results.append({"labeled_size": len(labeled_indices), "accuracy": accuracy})
    
-with open("results.json", "w") as f:
+with open(f"results_{strategy}_seed{seed}.json", "w") as f:
     json.dump(results, f, indent=2)
 
 

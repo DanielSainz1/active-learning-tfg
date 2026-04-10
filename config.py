@@ -41,7 +41,7 @@ CONFIG = {
     # MC Dropout para BALD (estrategia 5)
     # -------------------------------------------------------------------------
     # T: número de pasadas forward estocásticas para estimar la incertidumbre
-    "mc_forward_passes": 20,
+    "mc_forward_passes": 5,
 
     # -------------------------------------------------------------------------
     # Reproducibilidad
