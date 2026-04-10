@@ -16,7 +16,7 @@ CONFIG = {
 
     # B: presupuesto total de etiquetas (número máximo de muestras a etiquetar)
     # El ciclo se detiene cuando |L| alcanza este valor
-    "budget": 500,
+    "budget": 5000,
 
     # Número de repeticiones con semillas distintas para estimar variabilidad
     "n_seeds": 5,
@@ -25,7 +25,7 @@ CONFIG = {
     # Entrenamiento de la CNN
     # -------------------------------------------------------------------------
     # Épocas de entrenamiento en cada ciclo AL (el modelo se entrena desde cero)
-    "train_epochs": 2,
+    "train_epochs": 20,
 
     # Tamaño del mini-batch para el DataLoader de entrenamiento
     "train_batch_size": 64,
