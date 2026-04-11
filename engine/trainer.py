@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 
 def evaluate(model, loader, device):
+    # Calculates accuracy
     model.eval()
     correct = 0
     total = 0
@@ -22,6 +23,8 @@ def evaluate(model, loader, device):
     return correct / total
 
 def train_epoch(model, loader, optimizer, criterion, device):
+    # Trains the model during 1 epoch. Runs through the images in the loader 
+    # one time and updates weight. Returns average loss for that epoch.
     model.train()
     total_loss = 0
 
@@ -44,6 +47,7 @@ def train_epoch(model, loader, optimizer, criterion, device):
     return total_loss / len(loader)
 
 def train(model, labeled_dataset, config, device):
+    # Calls train_epoch repeatedly during config["train_epochs"] epochs,
     loader = torch.utils.data.DataLoader(labeled_dataset, batch_size=config["train_batch_size"], shuffle=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
     criterion = nn.CrossEntropyLoss()

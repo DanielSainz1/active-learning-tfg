@@ -16,6 +16,7 @@ class FashionMNISTCNN(nn.Module):
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
+        # passes an image through the whole network and returns logits
         # Convolutional blocks
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
@@ -28,6 +29,7 @@ class FashionMNISTCNN(nn.Module):
         return x
 
     def get_probabilities(self, loader, device):
+        # Run inference and return softmax probabilities for all samples
         self.eval()
         all_probs = []
         with torch.no_grad():
@@ -39,6 +41,7 @@ class FashionMNISTCNN(nn.Module):
 
     
     def enable_dropout(self):
+      # Enable dropout during inference (used by BALD for MC Dropout)
       for module in self.modules():
           if isinstance(module, torch.nn.Dropout):
               module.train()

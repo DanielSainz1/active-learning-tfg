@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 
 def least_confidence(model, unlabeled_dataset, n, device):
+    # Select n samples where the model is least confidence about its top prediction
     loader = DataLoader(unlabeled_dataset, batch_size=256, shuffle=False)
     
     # 1. get probabilities for all images
