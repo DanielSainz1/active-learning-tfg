@@ -1,6 +1,7 @@
 import glob
 import json
 import matplotlib.pyplot as plt
+import numpy as np
 
 #Strategies to compare
 strategies = ["random", "least_confidence", "margin", "entropy", "bald"]
@@ -24,23 +25,42 @@ for strategy in strategies:
             data = json.load(f)
             all_runs.append(data)
 
-#Average accuracy for every seed
+#Average accuracy and std for every seed
     if all_runs:
         n_rounds = len(all_runs[0])
         averaged = []
         for i in range(n_rounds):
             labeled_size = all_runs[0][i]["labeled_size"]
             avg_accuracy = sum(run[i]["accuracy"] for run in all_runs) / len(all_runs)
-            averaged.append({"labeled_size": labeled_size, "accuracy": avg_accuracy})
+            std_accuracy = np.std([run[i]["accuracy"] for run in all_runs])
+            averaged.append({"labeled_size": labeled_size, "accuracy": avg_accuracy, "std": std_accuracy})
         averaged_by_strategy[strategy] = averaged
 
 print(averaged_by_strategy)
+
 for strategy in averaged_by_strategy:       
     dataplot = averaged_by_strategy[strategy]
     x = [point["labeled_size"]for point in dataplot]
     y = [point["accuracy"] for point in dataplot]
-    plt.plot(x, y, label=strategy)
+    std = [point["std"] for point in dataplot]
 
+    #Calculate AUC with trapezoid rule in numpy
+    auc = np.trapz(y, x)
+    print (f"{strategy}: AUC = {auc:.2f}")
+
+    for threshold in [0.80, 0.85, 0.88, 0.90]:
+      for size, acc in zip(x, y):
+          if acc >= threshold:
+              print(f"{strategy} @ {threshold}: {size} samples")
+              break
+    else:
+        print(f"{strategy} @ {threshold}: never reached")
+
+    plt.plot(x, y, label=strategy)
+    plt.fill_between(x,
+                 [a - s for a, s in zip(y,std)],
+                 [a + s for a, s in zip(y,std)],
+                 alpha = 0.2)
 plt.xlabel("Labeled samples")
 plt.ylabel("Accuracy")
 plt.legend()
