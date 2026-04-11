@@ -1,83 +1,82 @@
 # =============================================================================
-# config.py — Configuración central del experimento de Active Learning
+# config.py — Main configuration for the Active Learning Experiment.
 # =============================================================================
-# Este archivo contiene TODOS los hiperparámetros del experimento.
+# This file contains ALL of the experiments hyperparameters.
 # =============================================================================
 
 CONFIG = {
     # -------------------------------------------------------------------------
-    # Ciclo de Active Learning
+    # Active Learning cycle
     # -------------------------------------------------------------------------
-    # n₀: tamaño del conjunto etiquetado inicial (semilla L₀)
+    # n₀: Size of the initial labeled pool (seed L₀)
     "initial_pool_size": 100,
 
-    # b: número de instancias adquiridas en cada iteración del ciclo AL
+    # b: Number of instances acquired per iteration in the AL cycle
     "query_batch_size": 100,
 
-    # B: presupuesto total de etiquetas (número máximo de muestras a etiquetar)
-    # El ciclo se detiene cuando |L| alcanza este valor
+    # B: Total budget for labels (max number of instances to label)
+    # Cycle stops when |L| reaches that value
     "budget": 5000,
 
-    # Número de repeticiones con semillas distintas para estimar variabilidad
+    # Number of repetitions with different seeds to estimate variability
     "n_seeds": 5,
 
     # -------------------------------------------------------------------------
-    # Entrenamiento de la CNN
+    # CNN's training
     # -------------------------------------------------------------------------
-    # Épocas de entrenamiento en cada ciclo AL (el modelo se entrena desde cero)
+    # Epochs of training in each AL cycle (model is trained from scratch)
     "train_epochs": 20,
 
-    # Tamaño del mini-batch para el DataLoader de entrenamiento
+    # Size of the mini-batch for the training DataLoader
     "train_batch_size": 64,
 
-    # Tasa de aprendizaje del optimizador Adam (igual que en el Capítulo 2)
+    # Adam's optimizer learning rate (like explained in Chapter 2)
     "learning_rate": 0.001,
 
-    # Batch size para la fase de evaluación/predicción (más grande = más rápido)
-    # No afecta a la calidad del modelo, solo a la velocidad de inferencia
+    # Batch size for the evaluation / prediction phase (the bigger the quicker)
+    # It doesn't affect to the model's quality, only inference's speed
     "eval_batch_size": 256,
 
     # -------------------------------------------------------------------------
-    # MC Dropout para BALD (estrategia 5)
+    # MC Dropout for BALD (fifth strategy)
     # -------------------------------------------------------------------------
-    # T: número de pasadas forward estocásticas para estimar la incertidumbre
+    # T: Number of stochastic forward passes to estimate uncertainty
     "mc_forward_passes": 5,
 
     # -------------------------------------------------------------------------
-    # Reproducibilidad
+    # Reproducibility
     # -------------------------------------------------------------------------
-    # Semillas fijas para cada una de las n_seeds repeticiones.
-    # Fijar la semilla garantiza que los experimentos son reproducibles:
-    # si alguien ejecuta el mismo código con las mismas semillas, obtendrá
-    # exactamente los mismos resultados.
+    # Fixed seeds for every of the n_seeds repetitions
+    # Fixing the seed to make sure the experiments can be reproduced
+    # This makes it so that if someone runs the code with the same seeds, 
+    # he'll obtain the exact same results.
     "base_seeds": [42, 123, 456, 789, 1024],
 
     # -------------------------------------------------------------------------
     # Métricas
+    # Metrics
     # -------------------------------------------------------------------------
-    # Umbrales de accuracy para calcular la Label Efficiency (LE).
-    # LE(a*) = mínimo número de etiquetas para alcanzar el accuracy a*.
+    # Accuracy thresholds to calculate Label Efficiency (LE).
+    # LE(a*) = Minimum number of labels to reach accuracy a*.
     "label_efficiency_thresholds": [0.80, 0.85, 0.88, 0.90],
 }
 
-# Estrategias de adquisición disponibles.
-# El orden aquí define el orden en las tablas y gráficas del TFG.
+# Available acquisition strategies
 STRATEGIES = ["random", "least_confidence", "margin", "entropy", "bald"]
 
-# Datasets disponibles
+# Datasets available
 DATASETS = ["fashion_mnist", "cifar10"]
 
-# Colores para las gráficas (uno por estrategia, distinguibles en escala de grises)
-# Orden: random, least_confidence, margin, entropy, bald
+# Colours for the graphics (one for each strategy)
 PLOT_COLORS = {
-    "random":           "#888888",  # gris
-    "least_confidence": "#E69F00",  # naranja
-    "margin":           "#56B4E9",  # azul claro
-    "entropy":          "#009E73",  # verde
-    "bald":             "#CC79A7",  # rosa/magenta
+    "random":           "#888888",  # gray
+    "least_confidence": "#E69F00",  # orange
+    "margin":           "#56B4E9",  # light blue
+    "entropy":          "#009E73",  # green
+    "bald":             "#CC79A7",  # pink/magenta
 }
 
-# Nombres legibles para las leyendas de las gráficas
+# Readable names for the leyends of the graphs
 STRATEGY_LABELS = {
     "random":           "Random",
     "least_confidence": "Least Confidence",
