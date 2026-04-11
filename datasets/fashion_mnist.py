@@ -1,10 +1,10 @@
 # =============================================================================
-# datasets/fashion_mnist.py — Carga y preparación de Fashion-MNIST
+# datasets/fashion_mnist.py — Load and prepare Fashion-MNIST
 # =============================================================================
-# Fashion-MNIST es el dataset principal del TFG (Capítulo 3).
-# - 60.000 imágenes de entrenamiento / 10.000 de test
-# - 10 clases de prendas de ropa
-# - 28×28 píxeles, 1 canal (escala de grises)
+# Fashion-MNIST
+# - 60.000 images to train / 10.000 to test
+# - 10 different classes of clothes
+# - 28×28 pixels, 1 channel (grayscale)
 # =============================================================================
 
 import numpy as np
@@ -13,17 +13,17 @@ from torch.utils.data import Dataset, Subset
 from torchvision import datasets, transforms
 
 
-# Estadísticas de normalización de Fashion-MNIST (media y std del canal único)
-# Estos valores están calculados sobre el conjunto de entrenamiento completo
+# Normalization statistics from Fashion-MNIST (mean and std)
+# These are calculated from the whole training set
 FASHION_MNIST_MEAN = (0.2860,)
 FASHION_MNIST_STD  = (0.3530,)
 
 
 def get_transform():
     """
-    Devuelve la transformación estándar para Fashion-MNIST.
-    Solo normalizamos: convertimos a tensor y ajustamos media/std.
-    NO se aplica data augmentation (tal como se define en el Capítulo 3).
+    Returns standard transform for Fashion-MNIST.
+    We only normalize: convert to tensor and adjust mean/std
+    Data augmentation doesn't apply
     """
     return transforms.Compose([
         transforms.ToTensor(),
@@ -33,38 +33,39 @@ def get_transform():
 
 def get_dataset(seed: int, initial_pool_size: int = 100):
     """
-    Carga Fashion-MNIST y divide el conjunto de entrenamiento en:
-      - labeled_indices:   índices de las 'initial_pool_size' muestras iniciales (L₀)
-      - unlabeled_indices: índices del resto del train (pool no etiquetado U₀)
-      - train_dataset:     el dataset de train completo (necesario para acceder a las muestras)
-      - test_dataset:      el dataset de test completo (para evaluar accuracy)
+    Loads Fashion-MNIST and divides the training set into:
+     - labeled_indices:   Indices for the 'inital_pool_size' first samples (L₀)
+     - unlabeled_indices: Indices for the rest of the train (pool not labeled U₀)
+     - train_dataset:     Whole train dataset (Necessary to access samples)
+     - test_dataset:      Whole dataset (To evaluate accuracy)
 
-    La semilla inicial L₀ se selecciona de forma ESTRATIFICADA: se toman
-    (initial_pool_size // n_clases) muestras de cada clase, garantizando que
-    todas las clases están representadas desde el principio.
+    The initial seed L₀ is selected in a STRATIFIED way: you pick 
+    (inital_pool_size // n_classes) samples from every class, ensuring that
+    all classes are represented since the start
 
-    Parámetros
+    Parameters
     ----------
     seed : int
-        Semilla para la selección aleatoria de L₀. Garantiza reproducibilidad.
+        Seed to select L₀ randomly. Ensures reproducibility
     initial_pool_size : int
-        Tamaño de la semilla inicial (n₀ en el Capítulo 2). Por defecto 100.
+        Size of the initial seed. 
 
-    Retorna
+    Returns
     -------
     labeled_indices : list[int]
-        Índices (sobre train_dataset) de las muestras inicialmente etiquetadas.
+        Indices (from train_dataset) of the initially labelled pool.
     unlabeled_indices : list[int]
-        Índices (sobre train_dataset) de las muestras no etiquetadas.
+        Indices (from train_dataset) of the unlabelled pool.
     train_dataset : torchvision.datasets.FashionMNIST
-        Dataset de entrenamiento completo (con transformaciones aplicadas).
+        Whole training dataset with transformations applied
     test_dataset : torchvision.datasets.FashionMNIST
-        Dataset de test completo.
+        Whole test dataset
+    
     """
     transform = get_transform()
 
-    # Descargar (si no están ya) y cargar los datos
-    # data_root='./data' guarda los archivos en una carpeta 'data' local
+    # Download and load data
+    # data_root='./data' saves the files in the local 'data' folder
     train_dataset = datasets.FashionMNIST(
         root='./data',
         train=True,
@@ -78,30 +79,30 @@ def get_dataset(seed: int, initial_pool_size: int = 100):
         transform=transform,
     )
 
-    # Obtener todas las etiquetas del train para hacer la selección estratificada
+    # Get all of the labels from train to do the stratified selection
     all_labels = np.array(train_dataset.targets)
     n_classes = len(np.unique(all_labels))
-    n_per_class = initial_pool_size // n_classes  # ej: 100 // 10 = 10 por clase
+    n_per_class = initial_pool_size // n_classes  # ex: 100 // 10 = 10 per class
 
-    # Fijar la semilla aleatoria para reproducibilidad
+    # Fix random seed to ensure reproducibility
     rng = np.random.default_rng(seed)
 
     labeled_indices = []
-    for clase in range(n_classes):
-        # Índices de todas las muestras de esta clase
-        indices_clase = np.where(all_labels == clase)[0]
-        # Seleccionar n_per_class al azar de esta clase
-        seleccionados = rng.choice(indices_clase, size=n_per_class, replace=False)
-        labeled_indices.extend(seleccionados.tolist())
+    for class_idx in range(n_classes):
+        # Indices of all samples from this class
+        class_indices = np.where(all_labels == class_idx)[0]
+        # Select n_per_class randomly from this class
+        selected = rng.choice(class_indices, size=n_per_class, replace=False)
+        labeled_indices.extend(selected.tolist())
 
-    # El conjunto no etiquetado es todo el train MENOS los índices ya seleccionados
+    # The non labeled pool is all of the train minus the indices already selected
     labeled_set = set(labeled_indices)
     unlabeled_indices = [i for i in range(len(train_dataset)) if i not in labeled_set]
 
     return labeled_indices, unlabeled_indices, train_dataset, test_dataset
 
 
-# Nombres de las 10 clases de Fashion-MNIST (útil para las figuras)
+# Names of the 10 different classes in Fashion-MNIST (useful for the plots)
 FASHION_MNIST_CLASSES = [
     "T-shirt/top",  # 0
     "Trouser",      # 1
