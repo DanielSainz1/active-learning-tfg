@@ -50,3 +50,4 @@ def train(model, labeled_dataset, config, device):
     
     for epoch in range(config["train_epochs"]):
         loss = train_epoch(model, loader, optimizer, criterion, device)
+        print (f" Epoch {epoch+1}/{config['train_epochs']} | Loss: {loss:.4f}")
