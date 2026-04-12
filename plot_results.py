@@ -3,7 +3,6 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
 import numpy as np
 from config import PLOT_COLORS, STRATEGY_LABELS
 
@@ -13,7 +12,7 @@ strategies = ["random", "least_confidence", "margin", "entropy", "bald"]
 #Group result files by strategy
 files_by_strategy = {s: [] for s in strategies}
 
-for file in glob.glob("results_*json"):
+for file in glob.glob("results/results_*.json"):
     for strategy in strategies:
         if strategy in file:
             files_by_strategy[strategy].append(file)

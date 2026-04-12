@@ -66,7 +66,7 @@ while len(labeled_indices) < CONFIG["budget"]:
     results.append({"labeled_size": len(labeled_indices), "accuracy": accuracy})
 
 #Save results
-with open(f"results_{strategy}_seed{seed}.json", "w") as f:
+with open(f"results/results_{strategy}_seed{seed}.json", "w") as f:
     json.dump(results, f, indent=2)
 
 
