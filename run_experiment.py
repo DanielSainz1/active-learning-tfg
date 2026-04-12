@@ -30,6 +30,9 @@ labeled_indices, unlabeled_indices, train_dataset, test_dataset = get_dataset(
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 results = []
+patience = CONFIG["patience"]
+min_improvement = CONFIG["min_improvement"]
+
 
 # Active Learning loop
 while len(labeled_indices) < CONFIG["budget"]:
@@ -64,6 +67,13 @@ while len(labeled_indices) < CONFIG["budget"]:
     labeled_indices.extend(selected)
     unlabeled_indices = [i for i in unlabeled_indices if i not in selected]
     results.append({"labeled_size": len(labeled_indices), "accuracy": accuracy})
+
+    # Early stopping: stop if accuracy hasn't improved in the last N rounds
+    if len(results) >= patience:
+        recent = [r["accuracy"] for r in results[-patience:]]
+        if max(recent) - min(recent) < min_improvement:
+            print("Early stopping: accuracy has plateaued")
+            break
 
 #Save results
 with open(f"results/results_{strategy}_seed{seed}.json", "w") as f:

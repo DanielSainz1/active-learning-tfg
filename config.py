@@ -53,12 +53,14 @@ CONFIG = {
     "base_seeds": [42, 123, 456, 789, 1024],
 
     # -------------------------------------------------------------------------
-    # Métricas
     # Metrics
     # -------------------------------------------------------------------------
     # Accuracy thresholds to calculate Label Efficiency (LE).
     # LE(a*) = Minimum number of labels to reach accuracy a*.
     "label_efficiency_thresholds": [0.80, 0.85, 0.88, 0.90],
+    # Early stopping
+    "patience": 5,
+    "min_improvement": 0.005,
 }
 
 # Available acquisition strategies
@@ -76,7 +78,7 @@ PLOT_COLORS = {
     "bald":             "#CC79A7",  # pink/magenta
 }
 
-# Readable names for the leyends of the graphs
+# Readable names for the legends of the graphs
 STRATEGY_LABELS = {
     "random":           "Random",
     "least_confidence": "Least Confidence",
