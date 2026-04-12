@@ -1,7 +1,11 @@
 import glob
 import json
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import numpy as np
+from config import PLOT_COLORS, STRATEGY_LABELS
 
 #Strategies to compare
 strategies = ["random", "least_confidence", "margin", "entropy", "bald"]
@@ -36,8 +40,6 @@ for strategy in strategies:
             averaged.append({"labeled_size": labeled_size, "accuracy": avg_accuracy, "std": std_accuracy})
         averaged_by_strategy[strategy] = averaged
 
-print(averaged_by_strategy)
-
 for strategy in averaged_by_strategy:       
     dataplot = averaged_by_strategy[strategy]
     x = [point["labeled_size"]for point in dataplot]
@@ -45,7 +47,7 @@ for strategy in averaged_by_strategy:
     std = [point["std"] for point in dataplot]
 
     #Calculate AUC with trapezoid rule in numpy
-    auc = np.trapz(y, x)
+    auc = np.trapezoid(y, x)
     print (f"{strategy}: AUC = {auc:.2f}")
 
     for threshold in [0.80, 0.85, 0.88, 0.90]:
@@ -53,14 +55,16 @@ for strategy in averaged_by_strategy:
           if acc >= threshold:
               print(f"{strategy} @ {threshold}: {size} samples")
               break
-    else:
+      else:
         print(f"{strategy} @ {threshold}: never reached")
 
-    plt.plot(x, y, label=strategy)
+    plt.plot(x, y, label=STRATEGY_LABELS[strategy], color=PLOT_COLORS[strategy])
     plt.fill_between(x,
                  [a - s for a, s in zip(y,std)],
                  [a + s for a, s in zip(y,std)],
+                 color = PLOT_COLORS[strategy],
                  alpha = 0.2)
+plt.title("Active Learning: Accuracy vs Labeled Samples")
 plt.xlabel("Labeled samples")
 plt.ylabel("Accuracy")
 plt.legend()
