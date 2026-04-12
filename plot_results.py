@@ -63,6 +63,7 @@ for strategy in averaged_by_strategy:
                  [a + s for a, s in zip(y,std)],
                  color = PLOT_COLORS[strategy],
                  alpha = 0.2)
+plt.grid(True, alpha=0.3)
 plt.title("Active Learning: Accuracy vs Labeled Samples")
 plt.xlabel("Labeled samples")
 plt.ylabel("Accuracy")

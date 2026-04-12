@@ -21,6 +21,14 @@ baseline across 5 random seeds to ensure reproducibility:
 - Entropy Sampling
 - BALD (Bayesian Active Learning by Disagreement)
 
+## Early Stopping
+
+  The training loop includes an automatic stopping criterion: if the accuracy
+  does not improve by more than `min_improvement` (0.005) over the last
+  `patience` (5) rounds, the experiment stops early to avoid wasting resources.
+
+  Both values are configurable in `config.py`.
+
 ## Installation
 
 1. Clone the repository:
