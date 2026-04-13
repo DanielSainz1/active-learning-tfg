@@ -28,9 +28,11 @@ class FashionMNISTCNN(nn.Module):
         x = self.fc2(x)
         return x
 
-    def get_probabilities(self, loader, device):
+    def get_probabilities(self, loader, device, mc_dropout=False):
         # Run inference and return softmax probabilities for all samples
-        self.eval()
+        # When mc_dropout=True, keeps dropout active for stochastic forward passes (BALD)
+        if not mc_dropout:
+            self.eval()
         all_probs = []
         with torch.no_grad():
             for images, _ in loader:

@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 import torch
 import numpy as np
 from torch.utils.data import Subset, DataLoader
@@ -21,6 +20,14 @@ parser.add_argument("--seed", type=int, default=42)
 args = parser.parse_args()
 strategy = args.strategy
 seed = args.seed
+
+# Fix all random seeds for full reproducibility
+np.random.seed(seed)
+torch.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 #Set up train data set and load dataset
 labeled_indices, unlabeled_indices, train_dataset, test_dataset = get_dataset(

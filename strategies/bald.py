@@ -4,16 +4,16 @@ from torch.utils.data import DataLoader
 
 def bald(model, unlabeled_dataset, n, device, T):
     # BALD: Selects samples where the model disagrees most across MC Dropout passes
-    # High disagreement between passes indicates high epimistic uncertainty
+    # High disagreement between passes indicates high epistemic uncertainty
     loader = DataLoader(unlabeled_dataset, batch_size=256, shuffle=False)
 
     model.eval()
-    model.enable_dropout()
+    model.enable_dropout()  # Re-activate dropout for stochastic passes
 
     # T forward passes → list of T matrices (n_samples, n_classes)
     all_passes = []
     for _ in range(T):
-        probs = model.get_probabilities(loader, device)
+        probs = model.get_probabilities(loader, device, mc_dropout=True)
         all_passes.append(probs)
 
     # all_passes is a list of T tensors → pile them in shape (T, n_samples, n_classes)
