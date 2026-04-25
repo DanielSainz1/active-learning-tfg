@@ -41,7 +41,25 @@ class FashionMNISTCNN(nn.Module):
                 all_probs.append(probs.cpu())
         return torch.cat(all_probs, dim=0)
 
-    
+    def get_logits(self, loader, device):
+        # Return raw logits (no softmax). Used by Temperature Scaling.
+        self.eval()
+        all_logits = []
+        with torch.no_grad():
+            for images, _ in loader:
+                images = images.to(device)
+                all_logits.append(self.forward(images).cpu())
+        return torch.cat(all_logits, dim=0)
+
+    def get_probabilities_mc(self, loader, device, T):
+        # T stochastic forward passes with dropout active; returns the mean of the T softmax distributions.
+        self.eval()
+        self.enable_dropout()
+        all_passes = []
+        for _ in range(T):
+            all_passes.append(self.get_probabilities(loader, device, mc_dropout=True))
+        return torch.stack(all_passes).mean(dim=0)
+
     def enable_dropout(self):
       # Enable dropout during inference (used by BALD for MC Dropout)
       for module in self.modules():
